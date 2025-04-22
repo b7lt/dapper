@@ -36,6 +36,15 @@ export default function LeftNavbar() {
             </NavLink>
           </Link>
         </NavItem>
+
+        <NavItem>
+          <Link href="/profile">
+            <NavLink>
+              <IconPlaceholder />
+              <NavText>Profile</NavText>
+            </NavLink>
+          </Link>
+        </NavItem>
       </NavItems>
       
       <PostButtonContainer>
