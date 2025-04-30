@@ -1,0 +1,179 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
+
+contract DapperSocial {
+    struct Post {
+        uint256 id;
+        address author;
+        string contentURI; // IPFS URI
+        uint256 timestamp;
+        uint256 likeCount;
+        bool hasImage;
+    }
+
+    struct Profile {
+        string username;
+        string displayName;
+        string avatarURI; // IPFS URI
+        string bannerURI; // IPFS URI
+        uint256 joinDate;
+        uint256[] postIds;
+    }
+
+    event PostCreated(uint256 indexed postId, address indexed author, string contentURI, uint256 timestamp);
+    event PostLiked(uint256 indexed postId, address indexed liker);
+    event PostUnliked(uint256 indexed postId, address indexed unliker);
+    event ProfileUpdated(address indexed user, string username);
+    event UserFollowed(address indexed follower, address indexed followed);
+    event UserUnfollowed(address indexed follower, address indexed unfollowed);
+
+    uint256 private _postIdCounter;
+    
+    mapping(uint256 => Post) public posts;
+    mapping(address => Profile) public profiles;
+    mapping(address => mapping(address => bool)) public isFollowing;
+    mapping(address => address[]) public following;
+    mapping(address => address[]) public followers;
+    mapping(address => mapping(uint256 => bool)) public hasLiked;
+    
+    function createProfile(
+        string calldata _username,
+        string calldata _displayName,
+        string calldata _avatarURI,
+        string calldata _bannerURI
+    ) external {
+        require(bytes(profiles[msg.sender].username).length == 0, "Profile already exists");
+        
+        profiles[msg.sender] = Profile({
+            username: _username,
+            displayName: _displayName,
+            avatarURI: _avatarURI,
+            bannerURI: _bannerURI,
+            joinDate: block.timestamp,
+            postIds: new uint256[](0)
+        });
+        
+        emit ProfileUpdated(msg.sender, _username);
+    }
+    
+    function updateProfile(
+        string calldata _displayName,
+        string calldata _avatarURI,
+        string calldata _bannerURI
+    ) external {
+        require(bytes(profiles[msg.sender].username).length > 0, "Profile doesn't exist");
+        
+        Profile storage profile = profiles[msg.sender];
+        profile.displayName = _displayName;
+        profile.avatarURI = _avatarURI;
+        profile.bannerURI = _bannerURI;
+        
+        emit ProfileUpdated(msg.sender, profile.username);
+    }
+    
+    function createPost(string calldata _contentURI, bool _hasImage) external returns (uint256) {
+        require(bytes(profiles[msg.sender].username).length > 0, "Create a profile first");
+        
+        uint256 postId = _postIdCounter++;
+        
+        posts[postId] = Post({
+            id: postId,
+            author: msg.sender,
+            contentURI: _contentURI,
+            timestamp: block.timestamp,
+            likeCount: 0,
+            hasImage: _hasImage
+        });
+        
+        profiles[msg.sender].postIds.push(postId);
+        
+        emit PostCreated(postId, msg.sender, _contentURI, block.timestamp);
+        
+        return postId;
+    }
+    
+    function likePost(uint256 _postId) external {
+        require(_postId < _postIdCounter, "Post doesn't exist");
+        require(!hasLiked[msg.sender][_postId], "Already liked this post");
+        
+        Post storage post = posts[_postId];
+        post.likeCount++;
+        hasLiked[msg.sender][_postId] = true;
+        
+        emit PostLiked(_postId, msg.sender);
+    }
+    
+    function unlikePost(uint256 _postId) external {
+        require(_postId < _postIdCounter, "Post doesn't exist");
+        require(hasLiked[msg.sender][_postId], "Haven't liked this post");
+        
+        Post storage post = posts[_postId];
+        post.likeCount--;
+        hasLiked[msg.sender][_postId] = false;
+        
+        emit PostUnliked(_postId, msg.sender);
+    }
+    
+    function followUser(address _userToFollow) external {
+        require(msg.sender != _userToFollow, "Cannot follow yourself");
+        require(bytes(profiles[_userToFollow].username).length > 0, "User to follow doesn't exist");
+        require(!isFollowing[msg.sender][_userToFollow], "Already following this user");
+        
+        isFollowing[msg.sender][_userToFollow] = true;
+        following[msg.sender].push(_userToFollow);
+        followers[_userToFollow].push(msg.sender);
+        
+        emit UserFollowed(msg.sender, _userToFollow);
+    }
+    
+    function unfollowUser(address _userToUnfollow) external {
+        require(isFollowing[msg.sender][_userToUnfollow], "Not following this user");
+        
+        isFollowing[msg.sender][_userToUnfollow] = false;
+        
+        address[] storage followingList = following[msg.sender];
+        for (uint256 i = 0; i < followingList.length; i++) {
+            if (followingList[i] == _userToUnfollow) {
+                followingList[i] = followingList[followingList.length - 1];
+                followingList.pop();
+                break;
+            }
+        }
+        
+        address[] storage followersList = followers[_userToUnfollow];
+        for (uint256 i = 0; i < followersList.length; i++) {
+            if (followersList[i] == msg.sender) {
+                followersList[i] = followersList[followersList.length - 1];
+                followersList.pop();
+                break;
+            }
+        }
+        
+        emit UserUnfollowed(msg.sender, _userToUnfollow);
+    }
+    
+    function getUserPosts(address _user) external view returns (uint256[] memory) {
+        return profiles[_user].postIds;
+    }
+    
+    function getPost(uint256 _postId) external view returns (Post memory) {
+        require(_postId < _postIdCounter, "Post doesn't exist");
+        return posts[_postId];
+    }
+    
+    function getFollowers(address _user) external view returns (address[] memory) {
+        return followers[_user];
+    }
+    
+    function getFollowing(address _user) external view returns (address[] memory) {
+        return following[_user];
+    }
+    
+    function checkFollowing(address _follower, address _followed) external view returns (bool) {
+        return isFollowing[_follower][_followed];
+    }
+    
+    function checkLiked(address _user, uint256 _postId) external view returns (bool) {
+        return hasLiked[_user][_postId];
+    }
+}
