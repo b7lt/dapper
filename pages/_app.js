@@ -1,6 +1,8 @@
 import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
 import { ThirdwebProvider } from "thirdweb/react";
+import { bnbTestnet } from "thirdweb/chains";
+import { client } from "@/utils/ThirdwebClient";
 
 export const GlobalStyle = createGlobalStyle`
   * {
@@ -44,7 +46,10 @@ export default function App({ Component, pageProps }) {
         <title>Dapper Social</title>
         <meta name='description' content='Decentralized social media network'></meta>
       </Head>
-      <ThirdwebProvider>
+      <ThirdwebProvider
+        client={client}
+        chain={bnbTestnet}
+      >
         <GlobalStyle />
         <Component {...pageProps} />
       </ThirdwebProvider>

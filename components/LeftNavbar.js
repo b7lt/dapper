@@ -1,55 +1,71 @@
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";
+import { useActiveAccount, useActiveWallet } from "thirdweb/react";
+import WalletConnector from "./WalletConnector";
 
 export default function LeftNavbar() {
+  const account = useActiveAccount();
+  const wallet = useActiveWallet();
+  const isConnected = !!account;
+
   return (
     <NavContainer>
       <LogoContainer>
         <Logo>Dapper</Logo>
       </LogoContainer>
       
-      <NavItems>
-        <NavItem>
-          <Link href="/">
-            <NavLink>
-              <IconPlaceholder />
-              <NavText>Home</NavText>
-            </NavLink>
-          </Link>
-        </NavItem>
-        
-        <NavItem>
-          <Link href="/notifications">
-            <NavLink>
-              <IconPlaceholder />
-              <NavText>Notifications</NavText>
-            </NavLink>
-          </Link>
-        </NavItem>
-        
-        <NavItem>
-          <Link href="/settings">
-            <NavLink>
-              <IconPlaceholder />
-              <NavText>Settings</NavText>
-            </NavLink>
-          </Link>
-        </NavItem>
+      {isConnected ? (
+        <>
+          <NavItems>
+          <NavItem>
+            <Link href="/">
+              <NavLink>
+                <IconPlaceholder />
+                <NavText>Home</NavText>
+              </NavLink>
+            </Link>
+          </NavItem>
+          
+          <NavItem>
+            <Link href="/notifications">
+              <NavLink>
+                <IconPlaceholder />
+                <NavText>Notifications</NavText>
+              </NavLink>
+            </Link>
+          </NavItem>
 
-        <NavItem>
-          <Link href="/profile">
-            <NavLink>
-              <IconPlaceholder />
-              <NavText>Profile</NavText>
-            </NavLink>
-          </Link>
-        </NavItem>
-      </NavItems>
-      
-      <PostButtonContainer>
-        <PostButton>Post</PostButton>
-      </PostButtonContainer>
+          <NavItem>
+            <Link href="/profile">
+              <NavLink>
+                <IconPlaceholder />
+                <NavText>Profile</NavText>
+              </NavLink>
+            </Link>
+          </NavItem>
+
+          <NavItem>
+            <Link href="/settings">
+              <NavLink>
+                <IconPlaceholder />
+                <NavText>Settings</NavText>
+              </NavLink>
+            </Link>
+          </NavItem>
+        </NavItems>
+        
+        <PostButtonContainer>
+          <PostButton>Post</PostButton>
+        </PostButtonContainer>
+        </>
+      ) : (
+        <ConnectWalletContainer>
+          <ConnectMessage>Join the conversation</ConnectMessage>
+          <WalletConnector />
+        </ConnectWalletContainer>
+      )}
+
     </NavContainer>
   );
 }
@@ -130,4 +146,18 @@ const PostButton = styled.button`
   &:hover {
     background-color: var(--accent-blue-hover);
   }
+`;
+
+const ConnectWalletContainer = styled.div`
+  // padding: 24px 16px;
+  padding: 8px 12px;
+  // border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+`;
+
+const ConnectMessage = styled.p`
+  font-size: 25px;
+  font-weight: 600;
 `;

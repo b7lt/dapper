@@ -3,7 +3,12 @@ import styled from "styled-components";
 import Layout from "@/components/Layout";
 import Post from "@/components/Post";
 
+import { useActiveAccount } from "thirdweb/react";
+
 export default function Home() {
+  const account = useActiveAccount();
+  const isConnected = !!account;
+
   const posts = [
     {
       id: 1,
@@ -49,12 +54,14 @@ export default function Home() {
         <HomeHeader>
           <PageTitle>Home</PageTitle>
         </HomeHeader>
-        
-        <ComposeBox>
-          <ProfileAvatar />
-          <ComposeInput placeholder="What's happening?" />
-        </ComposeBox>
-        
+
+        {isConnected && (
+          <ComposeBox>
+            <ProfileAvatar />
+            <ComposeInput placeholder="What's happening?" />
+          </ComposeBox>
+        )}
+
         <Timeline>
           {posts.map(post => (
             <Post key={post.id} post={post} />
