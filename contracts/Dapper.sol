@@ -9,6 +9,8 @@ contract DapperSocial {
         uint256 timestamp;
         uint256 likeCount;
         bool hasImage;
+        uint256 replyTo; // postId that this is replying to, else 0 if original post
+        uint256 replyCount;
     }
 
     struct Profile {
@@ -23,6 +25,7 @@ contract DapperSocial {
     event PostCreated(uint256 indexed postId, address indexed author, string contentURI, uint256 timestamp);
     event PostLiked(uint256 indexed postId, address indexed liker);
     event PostUnliked(uint256 indexed postId, address indexed unliker);
+    event PostReplied(uint256 indexed postId, uint256 indexed replyId, address indexed replier);
     event ProfileUpdated(address indexed user, string username);
     event UserFollowed(address indexed follower, address indexed followed);
     event UserUnfollowed(address indexed follower, address indexed unfollowed);
@@ -71,9 +74,21 @@ contract DapperSocial {
         emit ProfileUpdated(msg.sender, profile.username);
     }
     
-    function createPost(string calldata _contentURI, bool _hasImage) external returns (uint256) {
+    function createPost(
+        string calldata _contentURI, 
+        bool _hasImage,
+         uint256 _replyTo
+    ) external returns (uint256) {
         require(bytes(profiles[msg.sender].username).length > 0, "Create a profile first");
         
+        if (_replyTo != 0) {
+            require(_replyTo < _postIdCounter, "Original post doesn't exist");
+            
+            posts[_replyTo].replyCount++;
+            
+            emit PostReplied(_replyTo, _postIdCounter, msg.sender);
+        }
+
         uint256 postId = _postIdCounter++;
         
         posts[postId] = Post({
@@ -82,7 +97,9 @@ contract DapperSocial {
             contentURI: _contentURI,
             timestamp: block.timestamp,
             likeCount: 0,
-            hasImage: _hasImage
+            hasImage: _hasImage,
+            replyTo: _replyTo,
+            replyCount: 0
         });
         
         profiles[msg.sender].postIds.push(postId);
@@ -179,5 +196,28 @@ contract DapperSocial {
     
     function checkLiked(address _user, uint256 _postId) external view returns (bool) {
         return hasLiked[_user][_postId];
+    }
+
+    function getReplies(uint256 _postId) external view returns (uint256[] memory) {
+        require(_postId < _postIdCounter, "Post doesn't exist");
+        
+        uint256 replyCount = 0;
+        for (uint256 i = 0; i < _postIdCounter; i++) {
+            if (posts[i].replyTo == _postId) {
+                replyCount++;
+            }
+        }
+        
+        uint256[] memory replies = new uint256[](replyCount);
+        uint256 currentIndex = 0;
+        
+        for (uint256 i = 0; i < _postIdCounter; i++) {
+            if (posts[i].replyTo == _postId) {
+                replies[currentIndex] = i;
+                currentIndex++;
+            }
+        }
+        
+        return replies;
     }
 }

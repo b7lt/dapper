@@ -52,11 +52,11 @@ export function useUpdateProfile() {
 export function useCreatePost() {
   const { mutateAsync: sendTransaction, isLoading, error } = useSendTransaction();
   
-  const createPost = async ({ contentUri, hasImage }) => {
+  const createPost = async ({ contentUri, hasImage, replyTo = 0 }) => {
     const transaction = prepareContractCall({
       contract: dapperContract,
-      method: "function createPost(string calldata _contentURI, bool _hasImage) returns (uint256)",
-      params: [contentUri, hasImage]
+      method: "function createPost(string calldata _contentURI, bool _hasImage, uint256 _replyTo) external returns (uint256)",
+      params: [contentUri, hasImage, replyTo]
     });
     
     return sendTransaction({ transaction });
@@ -210,6 +210,35 @@ export function useAllPosts() {
     eventName: [event],
     queryOptions: {
       fromBlock: 0n, // start from beginning
+    },
+  });
+  
+  return { events, isLoading };
+}
+
+export function usePostReplies(postId) {
+  const { data, isLoading, error } = useReadContract({
+    contract: dapperContract,
+    method: "function getReplies(uint256 _postId) external view returns (uint256[] memory)",
+    params: [postId]
+  });
+
+  return { replyIds: data, isLoading, error };
+}
+
+export function usePostRepliedEvents(postId) {
+  const event = prepareEvent({
+    signature: "event PostReplied(uint256 indexed postId, uint256 indexed replyId, address indexed replier);"
+  })
+
+  const { data: events, isLoading } = useContractEvents({
+    contract: dapperContract,
+    eventName: [event],
+    queryOptions: {
+      filters: {
+        postId: postId
+      },
+      fromBlock: 0n,
     },
   });
   
