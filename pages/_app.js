@@ -1,8 +1,8 @@
 import Head from "next/head";
 import { createGlobalStyle } from "styled-components";
 import { ThirdwebProvider } from "thirdweb/react";
-import { bnbTestnet } from "thirdweb/chains";
-import { client } from "@/utils/ThirdwebClient";
+// import { bscTestnet } from "thirdweb/chains";
+import { client, testBNB } from "@/utils/ThirdwebClient";
 
 export const GlobalStyle = createGlobalStyle`
   * {
@@ -40,6 +40,8 @@ export const GlobalStyle = createGlobalStyle`
 `;
 
 export default function App({ Component, pageProps }) {
+  console.log("client:", client);
+
   return(
     <>
       <Head>
@@ -48,7 +50,7 @@ export default function App({ Component, pageProps }) {
       </Head>
       <ThirdwebProvider
         client={client}
-        chain={bnbTestnet}
+        chain={testBNB}
       >
         <GlobalStyle />
         <Component {...pageProps} />

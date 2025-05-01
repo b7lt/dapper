@@ -1,11 +1,16 @@
-import { uploadFile, uploadJson, downloadJSON } from "thirdweb";
+import { upload, download } from "thirdweb/storage";
 import { client } from "./ThirdwebClient";
 
 // https://portal.thirdweb.com/typescript/v5/storage
 
 export async function uploadToIPFS(data) {
   try {
-    const uri = await uploadJson({ client, data });
+    const uri = await upload({
+        client,
+        files: [
+            data,
+        ],
+    });
     console.log("Uploaded to IPFS with URI:", uri);
     return uri;
   } catch (error) {
@@ -16,7 +21,10 @@ export async function uploadToIPFS(data) {
 
 export async function uploadImageToIPFS(file) {
   try {
-    const uri = await uploadFile({ client, file });
+    const uri = await upload({
+        client,
+        files: [file, file.name]
+    });
     console.log("Uploaded image to IPFS with URI:", uri);
     return uri;
   } catch (error) {
@@ -27,7 +35,10 @@ export async function uploadImageToIPFS(file) {
 
 export async function downloadFromIPFS(uri) {
   try {
-    const data = await downloadJSON({ client, url: uri });
+    const data = await download({
+        client,
+        uri: uri,
+    });
     return data;
   } catch (error) {
     console.error("Error downloading from IPFS:", error);

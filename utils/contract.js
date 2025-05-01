@@ -1,7 +1,7 @@
 import { getContract, prepareContractCall, prepareEvent } from "thirdweb";
 import { useReadContract, useSendTransaction, useContractEvents} from "thirdweb/react";
-import { bnbTestnet } from "thirdweb/chains";
-import { client } from "./ThirdwebClient";
+// import { bscTestnet } from "thirdweb/chains";
+import { client, testBNB } from "./ThirdwebClient";
 
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_DAPPER_CONTRACT_ADDRESS;
 
@@ -12,7 +12,7 @@ const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_DAPPER_CONTRACT_ADDRESS;
 // init contract
 export const dapperContract = getContract({
   client,
-  chain: bnbTestnet,
+  chain: testBNB,
   address: CONTRACT_ADDRESS,
 });
 
@@ -22,12 +22,13 @@ export function useCreateProfile() {
   
   const createProfile = async ({ username, displayName, avatarUri, bannerUri }) => {
     const transaction = prepareContractCall({
+      client: client,
       dapperContract,
       method: "function createProfile(string calldata _username, string calldata _displayName, string calldata _avatarURI, string calldata _bannerURI",
       params: [username, displayName, avatarUri, bannerUri]
     });
     
-    return sendTransaction({ transaction });
+    return sendTransaction({ transaction, chain: testBNB });
   };
   
   return { createProfile, isLoading, error };
@@ -38,12 +39,13 @@ export function useUpdateProfile() {
   
   const updateProfile = async ({ displayName, avatarUri, bannerUri }) => {
     const transaction = prepareContractCall({
+      client: client,
       dapperContract,
       method: "function updateProfile(string calldata _displayName, string calldata _avatarURI, string calldata _bannerURI)",
-      params: [displayName, avatarUri, bannerUri]
+      params: [displayName, avatarUri, bannerUri],
     })
     
-    return sendTransaction({ transaction });
+    return sendTransaction({ transaction, chain: testBNB });
   };
   
   return { updateProfile, isLoading, error };
@@ -54,12 +56,13 @@ export function useCreatePost() {
   
   const createPost = async ({ contentUri, hasImage, replyTo = 0 }) => {
     const transaction = prepareContractCall({
+      client: client,
       contract: dapperContract,
       method: "function createPost(string calldata _contentURI, bool _hasImage, uint256 _replyTo) external returns (uint256)",
-      params: [contentUri, hasImage, replyTo]
+      params: [contentUri, hasImage, replyTo],
     });
     
-    return sendTransaction({ transaction });
+    return sendTransaction({ transaction, chain: testBNB, client: client });
   };
   
   return { createPost, isLoading, error };
@@ -70,12 +73,13 @@ export function useLikePost() {
   
   const likePost = async ({ postId }) => {
     const transaction = prepareContractCall({
+      client: client,
       contract: dapperContract,
       method: "function likePost(uint256 _postId)",
       params: [postId]
     });
     
-    return sendTransaction({ transaction });
+    return sendTransaction({ transaction, chain: testBNB });
   };
   
   return { likePost, isLoading, error };
@@ -86,12 +90,13 @@ export function useUnlikePost() {
   
   const unlikePost = async ({ postId }) => {
     const transaction = prepareContractCall({
+      client: client,
       contract: dapperContract,
       method: "function unlikePost(uint256 _postId)",
       params: [postId]
     });
     
-    return sendTransaction({ transaction });
+    return sendTransaction({ transaction, chain: testBNB });
   };
   
   return { unlikePost, isLoading, error };
@@ -102,12 +107,13 @@ export function useFollowUser() {
   
   const followUser = async ({ userToFollow }) => {
     const transaction = prepareContractCall({
+      client: client,
       contract: dapperContract,
       method: "function followUser(address _userToFollow)",
       params: [userToFollow]
     });
     
-    return sendTransaction({ transaction });
+    return sendTransaction({ transaction, chain: testBNB });
   };
   
   return { followUser, isLoading, error };
@@ -118,12 +124,13 @@ export function useUnfollowUser() {
   
   const unfollowUser = async ({ userToUnfollow }) => {
     const transaction = prepareContractCall({
+      client: client,
       contract: dapperContract,
       method: "function unfollowUser(address _userToUnfollow)",
       params: [userToUnfollow]
     });
     
-    return sendTransaction({ transaction });
+    return sendTransaction({ transaction, chain: testBNB });
   };
   
   return { unfollowUser, isLoading, error };
@@ -152,6 +159,7 @@ export function useUserPosts(address) {
 
 export function usePost(postId) {
   const { data, isLoading, error } = useReadContract({
+    client: client,
     contract: dapperContract,
     method: "function getPost(uint256 _postId) external view returns (Post memory)",
     params: [postId]
@@ -206,6 +214,7 @@ export function useAllPosts() {
   })
 
   const { data: events, isLoading } = useContractEvents({
+    client: client,
     contract: dapperContract,
     eventName: [event],
     queryOptions: {
@@ -218,6 +227,7 @@ export function useAllPosts() {
 
 export function usePostReplies(postId) {
   const { data, isLoading, error } = useReadContract({
+    client: client,
     contract: dapperContract,
     method: "function getReplies(uint256 _postId) external view returns (uint256[] memory)",
     params: [postId]
