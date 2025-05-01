@@ -152,6 +152,10 @@ contract DapperSocial {
         emit UserUnfollowed(msg.sender, _userToUnfollow);
     }
     
+    function getUserProfile(address _user) external view returns (Profile memory) {
+        return profiles[_user];
+    }
+
     function getUserPosts(address _user) external view returns (uint256[] memory) {
         return profiles[_user].postIds;
     }
