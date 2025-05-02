@@ -54,7 +54,7 @@ export function useUpdateProfile() {
 }
 
 export function useCreatePost() {
-  const { mutateAsync: sendTransaction, isLoading, error } = useSendTransaction();
+  const { mutate: sendTransaction, isLoading, error } = useSendTransaction();
   
   const createPost = async ({ contentUri, hasImage, replyTo = 0 }) => {
     const transaction = prepareContractCall({
@@ -239,7 +239,7 @@ export function usePostReplies(postId) {
 
 export function usePostRepliedEvents(postId) {
   const event = prepareEvent({
-    signature: "event PostReplied(uint256 indexed postId, uint256 indexed replyId, address indexed replier);"
+    signature: "event PostReplied(uint256 indexed postId, uint256 indexed replyId, address indexed replier)"
   })
 
   const { data: events, isLoading } = useContractEvents({
@@ -254,4 +254,26 @@ export function usePostRepliedEvents(postId) {
   });
   
   return { events, isLoading };
+}
+
+export function useBatchPosts(postIds) {
+  const { data, isLoading, error } = useReadContract({
+    client: client,
+    contract: dapperContract,
+    method: "getBatchPosts",
+    params: [postIds]
+  });
+  
+  return { posts: data, isLoading, error };
+}
+
+export function useRecentPosts(stepIncrement = 0, count = 10) {
+  const { data, isLoading, error } = useReadContract({
+    client: client,
+    contract: dapperContract,
+    method: "retrieveRecentPosts",
+    params: [stepIncrement, count]
+  });
+  
+  return { posts: data, isLoading, error };
 }

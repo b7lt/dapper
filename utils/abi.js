@@ -381,6 +381,67 @@ export const ABI = [
 	{
 		"inputs": [
 			{
+				"internalType": "uint256[]",
+				"name": "_postIds",
+				"type": "uint256[]"
+			}
+		],
+		"name": "getBatchPosts",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "contentURI",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "likeCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "hasImage",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "replyTo",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "replyCount",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct DapperSocial.Post[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "_user",
 				"type": "address"
@@ -702,6 +763,72 @@ export const ABI = [
 				"internalType": "uint256",
 				"name": "joinDate",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_stepIncrement",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_count",
+				"type": "uint256"
+			}
+		],
+		"name": "retrieveRecentPosts",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "author",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "contentURI",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "likeCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "hasImage",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "replyTo",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "replyCount",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct DapperSocial.Post[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",

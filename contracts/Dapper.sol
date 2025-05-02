@@ -220,4 +220,37 @@ contract DapperSocial {
         
         return replies;
     }
+
+    function getBatchPosts(uint256[] calldata _postIds) external view returns (Post[] memory) {
+        Post[] memory batchPosts = new Post[](_postIds.length);
+        
+        for (uint256 i = 0; i < _postIds.length; i++) {
+            require(_postIds[i] < _postIdCounter, "post doesn't exist");
+            batchPosts[i] = posts[_postIds[i]];
+        }
+        
+        return batchPosts;
+    }
+
+function retrieveRecentPosts(uint256 _stepIncrement, uint256 _count) external view returns (Post[] memory) {
+    require(_postIdCounter > 0, "no posts exist");
+    
+    uint256 availablePosts = _postIdCounter;
+    require(_stepIncrement < availablePosts, "increment too large");
+    
+    uint256 postsToReturn = _count;
+    if (_stepIncrement + postsToReturn > availablePosts) {
+        postsToReturn = availablePosts - _stepIncrement;
+    }
+    
+    Post[] memory result = new Post[](postsToReturn);
+    
+    for (uint256 i = 0; i < postsToReturn; i++) {
+        uint256 postId = availablePosts - 1 - _stepIncrement - i;
+        
+        result[i] = posts[postId];
+    }
+    
+    return result;
+}
 }
