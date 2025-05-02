@@ -2,6 +2,7 @@ import { getContract, prepareContractCall, prepareEvent } from "thirdweb";
 import { useReadContract, useSendTransaction, useContractEvents} from "thirdweb/react";
 // import { bscTestnet } from "thirdweb/chains";
 import { client, testBNB } from "./ThirdwebClient";
+import { ABI } from "./abi";
 
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_DAPPER_CONTRACT_ADDRESS;
 
@@ -14,6 +15,7 @@ export const dapperContract = getContract({
   client,
   chain: testBNB,
   address: CONTRACT_ADDRESS,
+  abi: ABI,
 });
 
 // writes
@@ -24,7 +26,7 @@ export function useCreateProfile() {
     const transaction = prepareContractCall({
       client: client,
       dapperContract,
-      method: "function createProfile(string calldata _username, string calldata _displayName, string calldata _avatarURI, string calldata _bannerURI",
+      method: "createProfile",
       params: [username, displayName, avatarUri, bannerUri]
     });
     
@@ -41,7 +43,7 @@ export function useUpdateProfile() {
     const transaction = prepareContractCall({
       client: client,
       dapperContract,
-      method: "function updateProfile(string calldata _displayName, string calldata _avatarURI, string calldata _bannerURI)",
+      method: "updateProfile",
       params: [displayName, avatarUri, bannerUri],
     })
     
@@ -56,9 +58,8 @@ export function useCreatePost() {
   
   const createPost = async ({ contentUri, hasImage, replyTo = 0 }) => {
     const transaction = prepareContractCall({
-      client: client,
       contract: dapperContract,
-      method: "function createPost(string calldata _contentURI, bool _hasImage, uint256 _replyTo) external returns (uint256)",
+      method: "createPost",
       params: [contentUri, hasImage, replyTo],
     });
     
@@ -75,7 +76,7 @@ export function useLikePost() {
     const transaction = prepareContractCall({
       client: client,
       contract: dapperContract,
-      method: "function likePost(uint256 _postId)",
+      method: "likePost",
       params: [postId]
     });
     
@@ -92,7 +93,7 @@ export function useUnlikePost() {
     const transaction = prepareContractCall({
       client: client,
       contract: dapperContract,
-      method: "function unlikePost(uint256 _postId)",
+      method: "unlikePost",
       params: [postId]
     });
     
@@ -109,7 +110,7 @@ export function useFollowUser() {
     const transaction = prepareContractCall({
       client: client,
       contract: dapperContract,
-      method: "function followUser(address _userToFollow)",
+      method: "followUser",
       params: [userToFollow]
     });
     
@@ -126,7 +127,7 @@ export function useUnfollowUser() {
     const transaction = prepareContractCall({
       client: client,
       contract: dapperContract,
-      method: "function unfollowUser(address _userToUnfollow)",
+      method: "unfollowUser",
       params: [userToUnfollow]
     });
     
@@ -140,7 +141,7 @@ export function useUnfollowUser() {
 export function useUserProfile(address) {
   const { data, isLoading, error } = useReadContract({
     contract: dapperContract,
-    method: "function getUserProfile(address _user) external view returns (Profile memory)",
+    method: "getUserProfile",
     params: [address]
   });
   
@@ -150,7 +151,7 @@ export function useUserProfile(address) {
 export function useUserPosts(address) {
   const { data, isLoading: postsLoading, error: postsError } = useReadContract({
     contract: dapperContract,
-    method: "function getUserPosts(address _user) external view returns (uint256[] memory)",
+    method: "getUserPosts",
     params: [address]
   });
   
@@ -161,7 +162,7 @@ export function usePost(postId) {
   const { data, isLoading, error } = useReadContract({
     client: client,
     contract: dapperContract,
-    method: "function getPost(uint256 _postId) external view returns (Post memory)",
+    method: "getPost",
     params: [postId]
   });
   
@@ -171,7 +172,7 @@ export function usePost(postId) {
 export function useHasLiked(userAddress, postId) {
   const { data, isLoading, error } = useReadContract({
     contract: dapperContract,
-    method: "function checkLiked(address _user, uint256 _postId) external view returns (bool)",
+    method: "checkLiked",
     params: [userAddress, postId]
   });
   
@@ -181,7 +182,7 @@ export function useHasLiked(userAddress, postId) {
 export function useFollowers(address) {
   const { data, isLoading, error } = useReadContract({
     contract: dapperContract,
-    method: "function getFollowers(address _user) external view returns (address[] memory)",
+    method: "getFollowers",
     params: [address]
   });
   
@@ -191,7 +192,7 @@ export function useFollowers(address) {
 export function useFollowing(address) {
   const { data, isLoading, error } = useReadContract({
     contract: dapperContract,
-    method: "function getFollowing(address _user) external view returns (address[] memory)",
+    method: "getFollowing",
     params: [address]
   });
   
@@ -201,7 +202,7 @@ export function useFollowing(address) {
 export function useIsFollowing(followerAddress, followedAddress) {
   const { data, isLoading, error } = useReadContract({
     contract: dapperContract,
-    method: "function checkFollowing(address _follower, address _followed) external view returns (bool)",
+    method: "checkFollowing",
     params: [followerAddress, followedAddress]
   });
   
@@ -229,7 +230,7 @@ export function usePostReplies(postId) {
   const { data, isLoading, error } = useReadContract({
     client: client,
     contract: dapperContract,
-    method: "function getReplies(uint256 _postId) external view returns (uint256[] memory)",
+    method: "getReplies",
     params: [postId]
   });
 
