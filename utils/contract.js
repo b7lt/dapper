@@ -30,7 +30,7 @@ export function useCreateProfile() {
       params: [username, displayName, avatarUri, bannerUri]
     });
     
-    return sendTransaction({ transaction, chain: testBNB });
+    return sendTransaction(transaction);
   };
   
   return { createProfile, isLoading, error };
@@ -47,14 +47,14 @@ export function useUpdateProfile() {
       params: [displayName, avatarUri, bannerUri],
     })
     
-    return sendTransaction({ transaction, chain: testBNB });
+    return sendTransaction(transaction);
   };
   
   return { updateProfile, isLoading, error };
 }
 
 export function useCreatePost() {
-  const { mutate: sendTransaction, isLoading, error } = useSendTransaction();
+  const { mutate: sendTransaction, isLoading, error, data } = useSendTransaction();
   
   const createPost = async ({ contentUri, hasImage, replyTo = 0 }) => {
     const transaction = prepareContractCall({
@@ -63,7 +63,7 @@ export function useCreatePost() {
       params: [contentUri, hasImage, replyTo],
     });
     
-    return sendTransaction({ transaction, chain: testBNB, client: client });
+    return sendTransaction(transaction);
   };
   
   return { createPost, isLoading, error };
@@ -80,7 +80,7 @@ export function useLikePost() {
       params: [postId]
     });
     
-    return sendTransaction({ transaction, chain: testBNB });
+    return sendTransaction(transaction);
   };
   
   return { likePost, isLoading, error };
@@ -97,7 +97,7 @@ export function useUnlikePost() {
       params: [postId]
     });
     
-    return sendTransaction({ transaction, chain: testBNB });
+    return sendTransaction(transaction);
   };
   
   return { unlikePost, isLoading, error };
@@ -114,7 +114,7 @@ export function useFollowUser() {
       params: [userToFollow]
     });
     
-    return sendTransaction({ transaction, chain: testBNB });
+    return sendTransaction(transaction);
   };
   
   return { followUser, isLoading, error };
@@ -131,7 +131,7 @@ export function useUnfollowUser() {
       params: [userToUnfollow]
     });
     
-    return sendTransaction({ transaction, chain: testBNB });
+    return sendTransaction(transaction);
   };
   
   return { unfollowUser, isLoading, error };
