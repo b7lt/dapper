@@ -2,10 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import LeftNavbar from "./LeftNavbar";
 import RightSidebar from "./RightSidebar";
+import ProfileCheck from "./ProfileCheck";
 
 export default function Layout({ children }) {
   return (
     <AppContainer>
+      <ProfileCheck />
       <LeftNavbar />
       <MainContent>
         {children}
