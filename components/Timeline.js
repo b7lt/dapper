@@ -15,6 +15,10 @@ export default function Timeline() {
     return <LoadingTimeline />;
   }
 
+  if (!posts || posts.length === 0) {
+    return <EmptyTimeline />;
+  }
+
   const filteredPosts = posts.filter((post) => post.replyTo == 0);
   
   if (!filteredPosts || filteredPosts.length === 0) {
