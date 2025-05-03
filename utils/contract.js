@@ -271,3 +271,36 @@ export function useRecentPosts(stepIncrement = 0, count = 10) {
   
   return { posts: data, isLoading, error };
 }
+
+export function useLikedPosts(address) {
+  const { data, isLoading, error } = useReadContract({
+    client: client,
+    contract: dapperContract,
+    method: "getLikedPosts",
+    params: [address]
+  });
+
+  return { likedPostIds: data, isLoading, error };
+}
+
+export function useUserReplies(address) {
+  const { data, isLoading, error } = useReadContract({
+    client: client,
+    contract: dapperContract,
+    method: "getUserReplies",
+    params: [address]
+  });
+
+  return { replyIds: data, isLoading, error };
+}
+
+export function useUserParentPosts(address) {
+  const { data, isLoading, error } = useReadContract({
+    client: client,
+    contract: dapperContract,
+    method: "getUserParentPosts",
+    params: [address]
+  });
+
+  return { parentPostIds: data, isLoading, error };
+}

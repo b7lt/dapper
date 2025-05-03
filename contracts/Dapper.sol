@@ -38,6 +38,7 @@ contract DapperSocial {
     mapping(address => address[]) public following;
     mapping(address => address[]) public followers;
     mapping(address => mapping(uint256 => bool)) public hasLiked;
+    mapping(address => uint256[]) private userLikedPosts;
     
     function createProfile(
         string calldata _username,
@@ -116,6 +117,7 @@ contract DapperSocial {
         Post storage post = posts[_postId];
         post.likeCount++;
         hasLiked[msg.sender][_postId] = true;
+        userLikedPosts[msg.sender].push(_postId);
         
         emit PostLiked(_postId, msg.sender);
     }
@@ -127,7 +129,15 @@ contract DapperSocial {
         Post storage post = posts[_postId];
         post.likeCount--;
         hasLiked[msg.sender][_postId] = false;
-        
+        for (uint256 i = 0; i < userLikedPosts[msg.sender].length; i++) {
+            if (userLikedPosts[msg.sender][i] == _postId) {
+                // set i to last liked post and pop
+                userLikedPosts[msg.sender][i] = userLikedPosts[msg.sender][userLikedPosts[msg.sender].length - 1];
+                userLikedPosts[msg.sender].pop();
+                break;
+            }
+        }
+
         emit PostUnliked(_postId, msg.sender);
     }
     
@@ -252,5 +262,58 @@ contract DapperSocial {
         }
         
         return result;
+    }
+
+
+    // the following are for profile page
+
+    function getLikedPosts(address _user) external view returns (uint256[] memory) {
+        return userLikedPosts[_user];
+    }
+
+    function getUserParentPosts(address _user) external view returns (uint256[] memory) {
+        uint256[] memory userPosts = profiles[_user].postIds;
+        uint256 parentCount = 0;
+        
+        for (uint256 i = 0; i < userPosts.length; i++) {
+            if (posts[userPosts[i]].replyTo == 0) {
+                parentCount++;
+            }
+        }
+        
+        uint256[] memory parentPosts = new uint256[](parentCount);
+        uint256 currentI = 0;
+        
+        for (uint256 i = 0; i < userPosts.length; i++) {
+            if (posts[userPosts[i]].replyTo == 0) {
+                parentPosts[currentI] = userPosts[i];
+                currentI++;
+            }
+        }
+        
+        return parentPosts;
+    }
+
+    function getUserReplies(address _user) external view returns (uint256[] memory) {
+        uint256[] memory userPosts = profiles[_user].postIds;
+        uint256 replyCount = 0;
+        
+        for (uint256 i = 0; i < userPosts.length; i++) {
+            if (posts[userPosts[i]].replyTo != 0) {
+                replyCount++;
+            }
+        }
+        
+        uint256[] memory replies = new uint256[](replyCount);
+        uint256 currentI = 0;
+        
+        for (uint256 i = 0; i < userPosts.length; i++) {
+            if (posts[userPosts[i]].replyTo != 0) {
+                replies[currentI] = userPosts[i];
+                currentI++;
+            }
+        }
+        
+        return replies;
     }
 }
