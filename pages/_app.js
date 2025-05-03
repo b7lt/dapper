@@ -40,8 +40,6 @@ export const GlobalStyle = createGlobalStyle`
 `;
 
 export default function App({ Component, pageProps }) {
-  console.log("client:", client);
-
   return(
     <>
       <Head>
