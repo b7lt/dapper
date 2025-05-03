@@ -154,7 +154,7 @@ const ConnectWalletContainer = styled.div`
   // border-bottom: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 4px;
 `;
 
 const ConnectMessage = styled.p`

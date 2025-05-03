@@ -1,38 +1,131 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import styled from "styled-components";
+import { useActiveAccount } from "thirdweb/react";
+import { downloadFromIPFS } from "../utils/ipfs";
+import { useUserProfile, useHasLiked, useLikePost, useUnlikePost, usePost } from "../utils/contract";
 
-export default function Post({ post }) {
+import { GiTopHat } from "react-icons/gi";
+import { FaHeart } from "react-icons/fa";
+import { BiSolidMessageRounded } from "react-icons/bi";
+
+
+export default function Post({ postId, postData, isReply = false }) {
+  const account = useActiveAccount();
+  const router = useRouter();
+
+  const [content, setContent] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { profile: authorProfile } = useUserProfile(postData?.author);
+  const { hasLiked } = useHasLiked(account?.address, postId);
+  const { likePost } = useLikePost();
+  const { unlikePost } = useUnlikePost();
+  
+  useEffect(() => {
+    const fetchPostContent = async () => {
+      if (postData && postData.contentURI) {
+        try {
+          const response = await downloadFromIPFS(postData.contentURI);
+          const data = await response.json();
+          setContent(data);
+          console.log(data);
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error fetching post content:", error);
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchPostContent();
+  }, [postData]);
+
+  const handleLikeToggle = async () => {
+    try {
+      if (hasLiked) {
+        await unlikePost({ postId });
+      } else {
+        await likePost({ postId });
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
+
+  if (isLoading) {
+    return <LoadingPost />;
+  }
+
+  if (!content) {
+    return <ErrorPost />;
+  }
+
   return (
-    <PostWrapper>
+    <PostWrapper isReply={isReply} onClick={() => router.push(`/post/${postId}`)}>
       <PostLeft>
-        <PostAvatar style={post.avatarColor ? { backgroundColor: post.avatarColor } : {}} />
+        <GiTopHat style={{width: "100%", height: "100%"}}/>
       </PostLeft>
       <PostContent>
+        
         <PostHeader>
-          <PostAuthorName>{post.authorName}</PostAuthorName>
-          <PostAuthorUsername>{post.authorUsername}</PostAuthorUsername>
-          <PostTime>· {post.time}</PostTime>
+          <PostAuthorName>{authorProfile?.displayName || "Unknown User"}</PostAuthorName>
+          <PostAuthorUsername>
+            {authorProfile?.username ? `@${authorProfile.username}` : ""}
+          </PostAuthorUsername>
+          <PostTime>· {formatTimestamp(postData.timestamp)}</PostTime>
         </PostHeader>
-        <PostBody>{post.content}</PostBody>
-        {post.hasImage && <PostImage />}
+
+        <PostBody>{content.content}</PostBody>
         <PostActions>
           <PostAction>
-            <ActionIcon />
-            <ActionCount>{post.commentCount}</ActionCount>
+            <BiSolidMessageRounded />
+            <ActionCount>{postData.replyCount ? postData.replyCount.toString() : "0"}</ActionCount>
           </PostAction>
-          <PostAction>
-            <ActionIcon />
-            <ActionCount>{post.repostCount}</ActionCount>
-          </PostAction>
-          <PostAction>
-            <ActionIcon />
-            <ActionCount>{post.likeCount}</ActionCount>
-          </PostAction>
-          <PostAction>
-            <ActionIcon />
+          <PostAction onClick={handleLikeToggle} isActive={hasLiked}>
+            <FaHeart isActive={hasLiked} />
+            <ActionCount>{postData.likeCount.toString()}</ActionCount>
           </PostAction>
         </PostActions>
       </PostContent>
+    </PostWrapper>
+  );
+}
+
+function formatTimestamp(timestamp) {
+  if (!timestamp) return "";
+  
+  const timestampValue = typeof timestamp === 'bigint' 
+    ? Number(timestamp)
+    : Number(timestamp.toString());
+  
+  const date = new Date(timestampValue * 1000);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
+
+  if (diffSec < 60) return `${diffSec}s`;
+  if (diffMin < 60) return `${diffMin}m`;
+  if (diffHour < 24) return `${diffHour}h`;
+  if (diffDay < 7) return `${diffDay}d`;
+
+  return date.toLocaleDateString();
+}
+
+function LoadingPost() {
+  return (
+    <PostWrapper>
+      <LoadingIndicator>Loading post...</LoadingIndicator>
+    </PostWrapper>
+  );
+}
+
+function ErrorPost() {
+  return (
+    <PostWrapper>
+      <ErrorIndicator>Failed to load post</ErrorIndicator>
     </PostWrapper>
   );
 }
@@ -41,8 +134,8 @@ const PostWrapper = styled.article`
   display: flex;
   padding: 12px 16px;
   transition: background-color 0.2s;
-  
-  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  cursor: pointer;
   
   &:hover {
     background-color: rgba(255, 255, 255, 0.03);
@@ -51,14 +144,12 @@ const PostWrapper = styled.article`
 
 const PostLeft = styled.div`
   margin-right: 12px;
-`;
-
-const PostAvatar = styled.div`
+  // position: relative;
+  z-index: 1;
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: #1da1f2;
-  opacity: 0.8;
+
 `;
 
 const PostContent = styled.div`
@@ -93,25 +184,16 @@ const PostBody = styled.p`
   word-wrap: break-word;
 `;
 
-const PostImage = styled.div`
-  aspect-ratio: 16 / 9;
-  border-radius: 16px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  
-  background-color: #2f3336;
-`;
-
 const PostActions = styled.div`
   display: flex;
   justify-content: space-between;
-  max-width: 425px;
+  max-width: 100px;
 `;
 
 const PostAction = styled.div`
   display: flex;
   align-items: center;
-  color: var(--secondary-text);
+  color: ${props => (props.isActive ? 'var(--accent-blue)' : 'var(--secondary-text)')};
   cursor: pointer;
   transition: color 0.2s;
   
@@ -120,15 +202,21 @@ const PostAction = styled.div`
   }
 `;
 
-const ActionIcon = styled.div`
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background-color: currentColor;
-  opacity: 0.8;
-  margin-right: 4px;
-`;
-
 const ActionCount = styled.span`
   font-size: 13px;
+  margin-left: 4px;
+`;
+
+const LoadingIndicator = styled.div`
+  width: 100%;
+  padding: 16px;
+  text-align: center;
+  color: var(--secondary-text);
+`;
+
+const ErrorIndicator = styled.div`
+  width: 100%;
+  padding: 16px;
+  text-align: center;
+  color: var(--secondary-text);
 `;
