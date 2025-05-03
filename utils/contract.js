@@ -24,8 +24,7 @@ export function useCreateProfile() {
   
   const createProfile = async ({ username, displayName, avatarUri, bannerUri }) => {
     const transaction = prepareContractCall({
-      client: client,
-      dapperContract,
+      contract: dapperContract,
       method: "createProfile",
       params: [username, displayName, avatarUri, bannerUri]
     });
@@ -41,8 +40,7 @@ export function useUpdateProfile() {
   
   const updateProfile = async ({ displayName, avatarUri, bannerUri }) => {
     const transaction = prepareContractCall({
-      client: client,
-      dapperContract,
+      contract: dapperContract,
       method: "updateProfile",
       params: [displayName, avatarUri, bannerUri],
     })
@@ -74,7 +72,6 @@ export function useLikePost() {
   
   const likePost = async ({ postId }) => {
     const transaction = prepareContractCall({
-      client: client,
       contract: dapperContract,
       method: "likePost",
       params: [postId]
@@ -91,7 +88,6 @@ export function useUnlikePost() {
   
   const unlikePost = async ({ postId }) => {
     const transaction = prepareContractCall({
-      client: client,
       contract: dapperContract,
       method: "unlikePost",
       params: [postId]
@@ -108,7 +104,6 @@ export function useFollowUser() {
   
   const followUser = async ({ userToFollow }) => {
     const transaction = prepareContractCall({
-      client: client,
       contract: dapperContract,
       method: "followUser",
       params: [userToFollow]
@@ -125,7 +120,6 @@ export function useUnfollowUser() {
   
   const unfollowUser = async ({ userToUnfollow }) => {
     const transaction = prepareContractCall({
-      client: client,
       contract: dapperContract,
       method: "unfollowUser",
       params: [userToUnfollow]

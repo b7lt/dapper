@@ -30,7 +30,7 @@ contract DapperSocial {
     event UserFollowed(address indexed follower, address indexed followed);
     event UserUnfollowed(address indexed follower, address indexed unfollowed);
 
-    uint256 private _postIdCounter;
+    uint256 private _postIdCounter = 1;
     
     mapping(uint256 => Post) public posts;
     mapping(address => Profile) public profiles;
@@ -82,7 +82,7 @@ contract DapperSocial {
         require(bytes(profiles[msg.sender].username).length > 0, "Create a profile first");
         
         if (_replyTo != 0) {
-            require(_replyTo < _postIdCounter, "Original post doesn't exist");
+            require(_replyTo < _postIdCounter && _replyTo > 0, "Original post doesn't exist");
             
             posts[_replyTo].replyCount++;
             
@@ -232,25 +232,25 @@ contract DapperSocial {
         return batchPosts;
     }
 
-function retrieveRecentPosts(uint256 _stepIncrement, uint256 _count) external view returns (Post[] memory) {
-    require(_postIdCounter > 0, "no posts exist");
-    
-    uint256 availablePosts = _postIdCounter;
-    require(_stepIncrement < availablePosts, "increment too large");
-    
-    uint256 postsToReturn = _count;
-    if (_stepIncrement + postsToReturn > availablePosts) {
-        postsToReturn = availablePosts - _stepIncrement;
-    }
-    
-    Post[] memory result = new Post[](postsToReturn);
-    
-    for (uint256 i = 0; i < postsToReturn; i++) {
-        uint256 postId = availablePosts - 1 - _stepIncrement - i;
+    function retrieveRecentPosts(uint256 _stepIncrement, uint256 _count) external view returns (Post[] memory) {
+        require(_postIdCounter > 1, "no posts exist");
         
-        result[i] = posts[postId];
+        uint256 availablePosts = _postIdCounter - 1;
+        require(_stepIncrement < availablePosts, "increment too large");
+        
+        uint256 postsToReturn = _count;
+        if (_stepIncrement + postsToReturn > availablePosts) {
+            postsToReturn = availablePosts - _stepIncrement;
+        }
+        
+        Post[] memory result = new Post[](postsToReturn);
+        
+        for (uint256 i = 0; i < postsToReturn; i++) {
+            uint256 postId = availablePosts - _stepIncrement - i;
+            
+            result[i] = posts[postId];
+        }
+        
+        return result;
     }
-    
-    return result;
-}
 }
