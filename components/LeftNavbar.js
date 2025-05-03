@@ -3,16 +3,20 @@ import styled from "styled-components";
 import Link from "next/link";
 import { useActiveAccount, useActiveWallet } from "thirdweb/react";
 import WalletConnector from "./WalletConnector";
+import { useRouter } from "next/router";
+import { FaHome } from "react-icons/fa";
+import { IoPerson } from "react-icons/io5";
+import { IoMdSettings } from "react-icons/io";
 
 export default function LeftNavbar() {
   const account = useActiveAccount();
-  const wallet = useActiveWallet();
   const isConnected = !!account;
+  const router = useRouter();
 
   return (
     <NavContainer>
       <LogoContainer>
-        <Logo>Dapper</Logo>
+        <Logo onClick={() => router.push("/")}>Dapper</Logo>
       </LogoContainer>
       
       {isConnected ? (
@@ -21,34 +25,25 @@ export default function LeftNavbar() {
           <NavItem>
             <Link href="/">
               <NavLink>
-                <IconPlaceholder />
+                <FaHome style={{width: "24px", height: "24px", opacity: "0.6", marginRight: "16px"}}/>
                 <NavText>Home</NavText>
-              </NavLink>
-            </Link>
-          </NavItem>
-          
-          <NavItem>
-            <Link href="/notifications">
-              <NavLink>
-                <IconPlaceholder />
-                <NavText>Notifications</NavText>
               </NavLink>
             </Link>
           </NavItem>
 
           <NavItem>
-            <Link href="/profile">
+            <Link href={`/profile/${account.address}`}>
               <NavLink>
-                <IconPlaceholder />
+                <IoPerson style={{width: "24px", height: "24px", opacity: "0.6", marginRight: "16px"}}/>
                 <NavText>Profile</NavText>
               </NavLink>
             </Link>
           </NavItem>
 
           <NavItem>
-            <Link href="/settings">
+            <Link href={`/profile/${account.address}?showEdit=true`}>
               <NavLink>
-                <IconPlaceholder />
+                <IoMdSettings style={{width: "24px", height: "24px", opacity: "0.6", marginRight: "16px"}}/>
                 <NavText>Settings</NavText>
               </NavLink>
             </Link>
@@ -56,7 +51,7 @@ export default function LeftNavbar() {
         </NavItems>
         
         <PostButtonContainer>
-          <PostButton>Post</PostButton>
+          <PostButton onClick={() => router.push("/")}>Post</PostButton>
         </PostButtonContainer>
         </>
       ) : (
@@ -88,6 +83,12 @@ const Logo = styled.h1`
   font-size: 24px;
   font-weight: bold;
   color: var(--accent-blue);
+  cursor: pointer;
+  display: inline-block;
+
+  &:hover {
+    color: var(--accent-blue-hover);
+  }
 `;
 
 const NavItems = styled.ul`
@@ -115,15 +116,6 @@ const NavLink = styled.div`
 const NavText = styled.span`
   font-size: 20px;
   font-weight: 500;
-`;
-
-const IconPlaceholder = styled.div`
-  width: 24px;
-  height: 24px;
-  background-color: currentColor;
-  opacity: 0.6;
-  border-radius: 50%;
-  margin-right: 16px;
 `;
 
 const PostButtonContainer = styled.div`

@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useActiveAccount, useActiveWallet, useDisconnect } from "thirdweb/react";
+import { FaSearch } from "react-icons/fa";
 
 export default function RightSidebar() {
   const account = useActiveAccount();
@@ -11,8 +12,11 @@ export default function RightSidebar() {
   return (
     <SidebarContainer>
       <SearchContainer>
-        <SearchIcon />
-        <SearchInput placeholder="Search" />
+        <FaSearch 
+        style={{position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)",
+                width: "16px", height: "16px", opacity: "0.5"
+        }}/>
+        <SearchInput placeholder="Search (not implemented)" />
       </SearchContainer>
 
       {isConnected && (
@@ -40,18 +44,6 @@ const SidebarContainer = styled.div`
 const SearchContainer = styled.div`
   position: relative;
   margin: 12px 0;
-`;
-
-const SearchIcon = styled.div`
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: currentColor;
-  opacity: 0.5;
 `;
 
 const SearchInput = styled.input`
