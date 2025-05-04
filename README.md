@@ -3,6 +3,8 @@ It was made for a class assignment. It is built to be run on the BNB Smart Chain
 
 You can visit it at [my Vercel deployment, assuming it has not been taken down.](https://dapper-gules.vercel.app)
 
+Here is a video demonstration for class: https://www.youtube.com/watch?v=dX_kfe6bHvE
+
 ## Building and Deploying
 First, you must deploy the smart contract, `Dapper.sol` onto the BNB Smart Chain Testnet. Then, you must setup the `.env` file with your smart contract's address and Thirdweb client key.
 Then, you can run `npm run dev`.
