@@ -1,40 +1,16 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+Dapper is a decentralized social media network built on Solidity smart contracts and IPFS storage technology.
+It was made for a class assignment. It is built to be run on the BNB Smart Chain Testnet.
 
-## Getting Started
+You can visit it at [my Vercel deployment, assuming it has not been taken down.](https://dapper-gules.vercel.app)
 
-First, run the development server:
+## Building and Deploying
+First, you must deploy the smart contract, `Dapper.sol` onto the BNB Smart Chain Testnet. Then, you must setup the `.env` file with your smart contract's address and Thirdweb client key.
+Then, you can run `npm run dev`.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Screenshots
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+![Front page, logged in](https://i.imgur.com/XOLvSwH.png)
+![Dynamic Post page](https://i.imgur.com/z6U2To3.png)
+![Dynamic Profile page](https://i.imgur.com/6GvM4Ec.png)
+![Edit Profile/Settings page](https://i.imgur.com/WBL9mbT.png)
+![Front page, not logged in](https://i.imgur.com/QfukOuc.png)
