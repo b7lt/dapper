@@ -28,7 +28,6 @@ export default function Post({ postId, postData, isReply = false }) {
           const response = await downloadFromIPFS(postData.contentURI);
           const data = await response.json();
           setContent(data);
-          console.log(data);
           setIsLoading(false);
         } catch (error) {
           console.error("Error fetching post content:", error);
@@ -41,6 +40,7 @@ export default function Post({ postId, postData, isReply = false }) {
   }, [postData]);
 
   const handleLikeToggle = async () => {
+    if(!account) return;
     try {
       if (hasLiked) {
         await unlikePost({ postId });
@@ -63,7 +63,7 @@ export default function Post({ postId, postData, isReply = false }) {
   return (
     <PostWrapper isReply={isReply} onClick={() => router.push(`/post/${postId}`)}>
       <PostLeft>
-        <GiTopHat style={{width: "100%", height: "100%"}}/>
+        <GiTopHat style={{width: "100%", height: "100%"}} onClick={(e) => {router.push(`/profile/${postData.author}`); e.stopPropagation();}}/>
       </PostLeft>
       <PostContent>
         
@@ -81,8 +81,8 @@ export default function Post({ postId, postData, isReply = false }) {
             <BiSolidMessageRounded />
             <ActionCount>{postData.replyCount ? postData.replyCount.toString() : "0"}</ActionCount>
           </PostAction>
-          <PostAction onClick={handleLikeToggle} isActive={hasLiked}>
-            <FaHeart isActive={hasLiked} />
+          <PostAction onClick={handleLikeToggle} isActive={hasLiked} account={account}>
+            <FaHeart isActive={hasLiked}/>
             <ActionCount>{postData.likeCount.toString()}</ActionCount>
           </PostAction>
         </PostActions>
@@ -145,11 +145,18 @@ const PostWrapper = styled.article`
 const PostLeft = styled.div`
   margin-right: 12px;
   // position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 48px;
   height: 48px;
   border-radius: 50%;
 
+  // &:hover {
+  //   background-color: rgba(255, 255, 255, 0.03);
+  // }
+
+  &:hover > * {
+    color: rgba(255, 255, 255, 0.55);
+  }
 `;
 
 const PostContent = styled.div`
@@ -198,7 +205,8 @@ const PostAction = styled.div`
   transition: color 0.2s;
   
   &:hover {
-    color: var(--accent-blue);
+    cursor: ${props => (props.account ? "" : 'not-allowed')};
+    color: ${props => (props.account ? 'var(--accent-blue)' : "rgba(255, 255, 255, 0.7)")};
   }
 `;
 
