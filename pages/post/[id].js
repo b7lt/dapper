@@ -1,3 +1,5 @@
+// dynamic page for each post, shows all replies
+
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import styled from "styled-components";

@@ -1,3 +1,5 @@
+// main page that shows timeline and info about the site if the user isnt logged in
+
 import React from "react";
 import styled from "styled-components";
 import { useActiveAccount } from "thirdweb/react";

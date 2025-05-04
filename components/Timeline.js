@@ -1,3 +1,5 @@
+// main timeline that shows 10 most recent posts
+
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useRecentPosts } from "../utils/contract";

@@ -1,3 +1,5 @@
+// shows replies to a parent post of postId
+
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { usePost, usePostReplies } from "../utils/contract";

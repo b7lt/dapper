@@ -1,3 +1,5 @@
+// shared component that is used on every page to maintain page structure
+
 import React from "react";
 import styled from "styled-components";
 import LeftNavbar from "./LeftNavbar";

@@ -1,3 +1,5 @@
+// the left navbar that shows the connect button if user is not logged in, else shows links to profile/settings/home
+
 import React from "react";
 import styled from "styled-components";
 import Link from "next/link";

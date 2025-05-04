@@ -1,3 +1,5 @@
+// this component is for the composition box, it allows users to create a post that will be stored to the blockchain
+
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useActiveAccount } from "thirdweb/react";

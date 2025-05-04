@@ -1,3 +1,5 @@
+// dynamic page for each profile, shows users name, username, and has sections for their posts, replies, and likes
+
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";

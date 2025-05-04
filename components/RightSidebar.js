@@ -1,3 +1,5 @@
+// 'disconnect' button and unimplemented search bar
+
 import React from "react";
 import styled from "styled-components";
 import { useActiveAccount, useActiveWallet, useDisconnect } from "thirdweb/react";

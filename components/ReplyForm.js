@@ -1,3 +1,5 @@
+// allows users to reply to a given postId
+
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useActiveAccount } from "thirdweb/react";

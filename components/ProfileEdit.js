@@ -1,3 +1,5 @@
+// profile editor that lets users change their display name
+
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useActiveAccount } from "thirdweb/react";

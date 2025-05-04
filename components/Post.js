@@ -1,3 +1,5 @@
+// component for each post, shows posters name, username, post content
+
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import styled from "styled-components";

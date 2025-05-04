@@ -1,3 +1,5 @@
+// sign up window to make sure each user has an initialized profile
+
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useActiveAccount } from "thirdweb/react";
